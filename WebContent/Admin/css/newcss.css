@@ -1,0 +1,31 @@
+.jump-button{
+	    font-size: 13px;
+	    margin-top: 2px;
+	    color: #fff;
+	    background: #97262a;
+	    padding: 0.1em 0.5em;
+	    font-size: 1em;
+	    margin-top: 1em;
+	    border: none;
+	    outline: none;
+	    border-radius: 0.3em;
+	    -webkit-border-radius: 0.3em;
+	    -moz-border-radius: 0.3em;
+	    -o-border-radius: 0.3em;
+	}
+	
+	.submit-button{
+	    font-size: 13px;
+	    margin-top: 5px;
+	    color: #fff;
+	    background: green;
+	    padding: 0.6em 0.6em;
+	    font-size: 1em;
+	    margin-top: 1em;
+	    border: none;
+	    outline: none;
+	    border-radius: 0.3em;
+	    -webkit-border-radius: 0.3em;
+	    -moz-border-radius: 0.3em;
+	    -o-border-radius: 0.3em;
+	}

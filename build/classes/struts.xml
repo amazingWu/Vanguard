@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN"
+    "http://struts.apache.org/dtds/struts-2.1.dtd">
+     
+<struts>
+    <!-- 常量配置，用到constant标签 -->
+    <constant name="struts.i18n.encoding"  value="UTF-8"/>
+     
+    <!-- 包配置：一般都要继承struts-default，因为该包有默认的拦截器等东西 -->
+    <!--namespace：命名空间，考虑到可能出现相同的action，如果有命名空间就可以解决  -->
+    <package name="default" extends="struts-default">
+        <action name="HeaderList" class="com.vanguard.action.ExampleAction" method="HeaderList">
+            <result name="success" >head_list.jsp</result>
+        </action>
+        <action name="IndexList" class="com.vanguard.action.ExampleAction" method="IndexList">
+        	<result name="success">index_list.jsp</result>
+        </action>
+        <action name="ExampleList" class="com.vanguard.action.ExampleAction" method="ExampleList">
+        	<result name="success">example.jsp</result>
+        </action>
+        <action name="Detail" class="com.vanguard.action.DetailAction" method="Detail">
+        	<result name="success">Detail/detail.jsp</result>
+        </action>
+        <action name="Content" class="com.vanguard.action.DetailAction" method="Content">
+        	<result name="success">detail_content.jsp</result>
+        </action>
+        <action name="login" class="com.vanguard.action.AuthorAction" method="Login">
+            <result name="success" type="redirectAction">
+		         <param name="actionName">Index</param>
+		         <param name="namespace">/Admin</param>
+		    </result>
+            <result name="none">/Admin/login.jsp</result>
+        </action>
+        <action name="RelatedExample" class="com.vanguard.action.ExampleAction" method="RelatedExample">
+        	<result name="success">related_post.jsp</result>
+        </action>
+        <action name="RelatedComment" class="com.vanguard.action.CommentAction" method="GetComment">
+        	<result name="success">/Detail/comment.jsp</result>
+        </action>
+         <action name="AddComment" class="com.vanguard.action.CommentAction" method="AddComment">
+         	<result name="success" type="redirectAction">
+		         <param name="actionName">Detail</param>
+		         <param name="namespace">/</param>  
+		         <param name="id">${example_id}</param>
+		      </result>  
+        </action>
+        <action name="CompanyIndexAbout" class="com.vanguard.action.CompanyAction" method="CompanyIndexAbout">
+        	<result name="success">/Company/index_about.jsp</result>
+        </action>
+        <action name="CompanyContentAbout" class="com.vanguard.action.CompanyAction" method="CompanyContentAbout">
+        	<result name="success">/Company/content_about.jsp</result>
+        </action>
+        <action name="CompanyFootAbout" class="com.vanguard.action.CompanyAction" method="CompanyFootAbout">
+        	<result name="success">/footer.jsp</result>
+        </action>
+        <action name="WisdomList" class="com.vanguard.action.WisdomAction" method="WisdomList">
+        	<result name="success">/wisdom.jsp</result>
+        </action>
+    </package>
+    <package name="Admin" namespace="/Admin" extends="struts-default">
+     <!-- 定义一个拦截器 -->  
+        <interceptors>  
+            <interceptor name="authority"  
+                class="com.vanguard.auth.LoginInteceptor">  
+            </interceptor>  
+            <!-- 拦截器栈 -->  
+            <interceptor-stack name="mydefault">  
+                <interceptor-ref name="defaultStack" />  
+                <interceptor-ref name="authority" />  
+            </interceptor-stack>  
+        </interceptors>  
+        <!-- 定义全局Result -->  
+        <global-results>
+            <!-- 当返回login视图名时 -->
+            <result name="login">login.jsp</result>
+        </global-results>  
+        
+		<action name="Index" class="com.vanguard.action.DashboardAction" method="Index">
+        	<interceptor-ref name="mydefault" />
+        	<result name="success">index.jsp</result>
+        </action>
+        <action name="Logout" class="com.vanguard.action.AuthorAction" method="Logout">
+        	<result name="success">login.jsp</result>
+        </action>
+        <action name="ResetPwd" class="com.vanguard.action.AuthorAction" method="ResetPwd">
+        	<interceptor-ref name="mydefault"/>
+        	<result name="success">adminmn/success.jsp</result>
+        	<result name="error">adminmn/reset_pwd.jsp</result>
+        	<result name="page">adminmn/reset_pwd.jsp</result>
+        </action>
+    	<action name="ExampleList" class="com.vanguard.action.ExampleAction" method="AdminList">
+            <result name="normal" >examplemn/example_list.jsp</result>
+            <result name="header" >examplemn/header_list.jsp</result>
+            <result name="index" >examplemn/index_list.jsp</result>
+            <interceptor-ref name="mydefault" />  
+        </action>
+         <action name="ResetRecommend" class="com.vanguard.action.ExampleAction" method="ResetRecommend"> 
+		      <interceptor-ref name="mydefault" />  
+		      <result name="success" type="redirectAction">  
+		         <param name="actionName">ExampleList</param>
+		         <param name="namespace">/Admin</param>  
+		         <param name="start">${start}</param>
+		         <param name="kind">${kind}</param>  
+		      </result>  
+		      <result name="success_rec" type="redirectAction"> 
+		         <param name="actionName">ExampleList</param>
+		         <param name="namespace">/Admin</param>  
+		         <param name="start">${start}</param>
+		         <param name="kind">${kind}</param>
+		      </result>  
+		</action>
+		<action name="DelExample" class="com.vanguard.action.ExampleAction" method="DelExample"> 
+		      <interceptor-ref name="mydefault" />
+		      <result name="success" type="redirectAction">  
+		         <param name="actionName">ExampleList</param>
+		         <param name="namespace">/Admin</param>
+		         <param name="start">${start}</param>
+		         <param name="kind">${kind}</param>
+		      </result>  
+		</action>
+		<action name="AddExample" class="com.vanguard.action.ExampleAction" method="AddExample">
+			   <interceptor-ref name="mydefault" />  
+		       <result name="success">examplemn/success.jsp</result>
+		      <result name="error">examplemn/example_add.jsp</result>
+		</action>
+		<action name="EditorExample" class="com.vanguard.action.DetailAction" method="Editor">
+        	<interceptor-ref name="mydefault" />  
+        	<result name="success">examplemn/example_edit.jsp</result>
+        </action>
+        <action name="UpdateExample" class="com.vanguard.action.DetailAction" method="Update">
+        	 <interceptor-ref name="mydefault" />  
+        	 <result name="success" type="redirectAction">  
+		         <param name="actionName">ExampleList</param>
+		         <param name="namespace">/Admin</param>
+		         <param name="start">1</param>
+		         <param name="kind">3</param>
+		      </result> 
+		      <result name="error">examplemn/example_edit.jsp</result>
+        </action>
+        <action name="AddCompany" class="com.vanguard.action.CompanyAction" method="AddCompany">
+			   <interceptor-ref name="mydefault" />  
+		       <result name="success">companymn/success.jsp</result>
+		       <result name="error">companymn/example_add.jsp</result>
+		</action>
+		<action name="CompanyList" class="com.vanguard.action.CompanyAction" method="CompanyList">
+			   <interceptor-ref name="mydefault" />
+		       <result name="success">companymn/company_list.jsp</result>
+		</action>
+		<action name="ResetCompanyUsed" class="com.vanguard.action.CompanyAction" method="ResetCompanyUsed">
+			   <interceptor-ref name="mydefault" />
+		       <result name="success" type="redirectAction">  
+		         <param name="actionName">CompanyList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		</action>
+		<action name="DelCompany" class="com.vanguard.action.CompanyAction" method="DelCompany">
+			   <interceptor-ref name="mydefault" />
+		       <result name="success" type="redirectAction">  
+		         <param name="actionName">CompanyList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		</action>
+		<action name="EditCompany" class="com.vanguard.action.CompanyAction" method="EditCompany">
+			   <interceptor-ref name="mydefault" />
+		      <result name="success">companymn/company_edit.jsp</result>
+		      <result name="error" type="redirectAction">  
+		         <param name="actionName">CompanyList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		</action>
+		<action name="UpdateCompany" class="com.vanguard.action.CompanyAction" method="UpdateCompany">
+			   <interceptor-ref name="mydefault" />
+		      <result name="success" type="redirectAction">  
+		         <param name="actionName">CompanyList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		      <result name="error" type="redirectAction">  
+		         <param name="actionName">EditCompany</param>
+		         <param name="namespace">/Admin</param>
+		         <param name="company">${company}</param> 
+		      </result>
+		</action>
+		<action name="PreIndexCompany" class="com.vanguard.action.CompanyAction" method="PreIndexAbout">
+		       <result name="success">companymn/pre_index_about.jsp</result>
+		</action>
+		<action name="PreContentCompany" class="com.vanguard.action.CompanyAction" method="PreContentAbout">
+		       <result name="success">companymn/pre_content_about.jsp</result>
+		</action>
+		<action name="AdminCommentList" class="com.vanguard.action.CommentAction" method="AdminCommentList">
+		       <result name="success">commentmm/comment_list.jsp</result>
+		</action>
+		<action name="AdminCommentPersonal" class="com.vanguard.action.CommentAction" method="AdminCommentPersonal">
+		       <result name="success">commentmm/comment_list_personal.jsp</result>
+		</action>
+		<action name="AdminCommentDelPersonal" class="com.vanguard.action.CommentAction" method="AdminCommentDelPersonal">
+		      <interceptor-ref name="mydefault" />
+		      <result name="success" type="redirectAction">  
+		         <param name="actionName">AdminCommentPersonal</param>
+		         <param name="namespace">/Admin</param>  
+		         <param name="example_id">${example_id}</param>
+		      </result>
+		</action>
+		<action name="AdminCommentDel" class="com.vanguard.action.CommentAction" method="AdminCommentDel">
+		      <interceptor-ref name="mydefault" />
+		      <result name="success" type="redirectAction">  
+		         <param name="actionName">AdminCommentList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		</action>
+		<action name="BackgroundUp" class="com.vanguard.action.FileUploadAction" method="BackgroundUpload">
+		      <interceptor-ref name="mydefault" />
+		      <result name="success">/Admin/adminmn/success.jsp</result>
+		      <result name="error">/Admin/photomn/error.jsp</result>
+		</action>
+		<action name="LogoUp" class="com.vanguard.action.FileUploadAction" method="LogoUpload">
+		      <interceptor-ref name="mydefault" />
+		      <result name="success">/Admin/adminmn/success.jsp</result>
+		      <result name="error">/Admin/photomn/error.jsp</result>
+		</action>
+		<action name="VideoUp" class="com.vanguard.action.FileUploadAction" method="VideoUpload">
+		      <interceptor-ref name="mydefault" />
+		      <result name="success">/Admin/adminmn/success.jsp</result>
+		      <result name="error">/Admin/photomn/error.jsp</result>
+		</action>
+		<action name="WisdomList" class="com.vanguard.action.WisdomAction" method="WisdomList">
+        	<result name="success">/Admin/wisdommn/wisdom_list.jsp</result>
+        </action>
+        <action name="SaUpWisdom" class="com.vanguard.action.WisdomAction" method="SaUpWisdom">
+        	<result name="success">/Admin/wisdommn/success.jsp</result>
+        	<result name="error">wisdommn/wisdom_addupdate.jsp</result>
+        </action>
+        <action name="EditWisdom" class="com.vanguard.action.WisdomAction" method="EditWisdom">
+			  <!--  <interceptor-ref name="mydefault" /> -->
+		      <result name="success">wisdommn/wisdom_addupdate.jsp</result>
+		      <result name="error" type="redirectAction">
+		         <param name="actionName">WisdomList</param>
+		         <param name="namespace">/Admin</param>  
+		      </result>
+		</action>
+    </package>
+ 	<constant name="struts.multipart.saveDir" value="/tmp" />
+ 	<constant name="struts.multipart.maxSize" value="1073741824"/>
+</struts>

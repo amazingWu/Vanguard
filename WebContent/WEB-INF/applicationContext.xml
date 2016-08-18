@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+	<context:annotation-config />
+	<!-- beans注入自动扫描包 -->
+	<context:component-scan base-package="com.vanguard" />
+
+	<!-- 配置数据库连接信息 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://120.76.235.213:3306/vanguard"/>
+		<property name="username" value="root" />
+		<property name="password" value="" />
+	</bean>
+
+	<!-- sessionFactory配置 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 数据库信息为上面已经配置好的dataSource -->
+		<property name="dataSource" ref="dataSource" />
+		<!-- 自动扫描的包 -->
+		<property name="packagesToScan">
+			<list>
+				<value>com.vanguard.entity</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.MySQLDialect
+				hibernate.show_sql=false
+				hibernate.format_sql=true
+			</value>
+		</property>
+	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="txManager">
+	        <tx:attributes>
+	            <tx:method name="get*" read-only="true"/>
+	            <tx:method name="add*" propagation="REQUIRED"/>
+	            <tx:method name="list" read-only="true"/>
+	           	<tx:method name="save" propagation="REQUIRED"/>
+	           	<tx:method name="delete*" propagation="REQUIRED"/>
+	           	<tx:method name="update*" propagation="REQUIRED"/>
+	           	<tx:method name="insert" propagation="REQUIRED"/>
+	        </tx:attributes>
+    </tx:advice>
+    <!-- 配置事务拦截器拦截哪些类的哪些方法 -->
+	<aop:config>
+		<aop:pointcut expression="execution(public * com.vanguard.service.*.*(..))" id="businessService"/>
+    	<aop:advisor advice-ref="txAdvice" pointcut-ref="businessService"/>
+    </aop:config>
+    <!-- 配置 -->
+	<tx:annotation-driven transaction-manager="txManager"/>
+	<bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+    	<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- 预先给 HibernateTemplate注入sessionFactory属性值以用来初始化-->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- Dao继承HibernateSupportDao,必须使用set注入 -->
+	<bean id="authorDao" class="com.vanguard.dao.AuthorDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="exampleDao" class="com.vanguard.dao.ExampleDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="companyDao" class="com.vanguard.dao.CompanyDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="commentDao" class="com.vanguard.dao.CommentDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<bean id="wisdomDao" class="com.vanguard.dao.WisdomDao">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+	<!-- Service中使用了注解，所以不需要指定都有哪些属性，会自动扫描 -->
+	<bean id="authorService" class="com.vanguard.service.AuthorService"/>
+	<bean id="exampleService" class="com.vanguard.service.ExampleService"/>
+	<bean id="commentService" class="com.vanguard.service.CommentService"/>
+	<bean id="companyService" class="com.vanguard.service.CompanyService"/>
+	<bean id="wisdomService" class="com.vanguard.service.WisdomService"/>
+</beans>
